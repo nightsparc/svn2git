@@ -76,6 +76,22 @@ Once you have the necessary software on your system, you can install svn2git thr
 Usage
 -----
 
+### Gathering User Information
+From: https://github.com/jeslopalo/svn2git
+
+```shell
+	svn co REPOPATH repo
+	cd repo
+	svn log -q | awk -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2">"}' | sort -u > authors-transform.txt
+```
+This will create authors-transform.txt with all the committers from the SVN repository specified by REPOPATH with dummy Git committer information, such as:
+
+```shell
+	svn_committer = svn_committer <USER@DOMAIN.COM>
+```
+Once this is done, you can edit the file, and enter in each users actual name and email address on the right side of the equals sign. This will be the Git author information used during the migration.
+
+
 ### Initial Conversion ###
 
 There are several ways you can create a git repo from an existing
@@ -185,23 +201,6 @@ a very good starting point for your mapping.
 Or, for a remote URL:
 
     $ svn log --quiet http://path/to/root/of/project | grep -E "r[0-9]+ \| .+ \|" | cut -d'|' -f2 | sed 's/ //g' | sort | uniq
-
-Better:
-
-### Gathering User Information
-From: https://github.com/jeslopalo/svn2git
-
-```shell
-	svn co REPOPATH repo
-	cd repo
-	svn log -q | awk -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2">"}' | sort -u > authors-transform.txt
-```
-This will create authors-transform.txt with all the committers from the SVN repository specified by REPOPATH with dummy Git committer information, such as:
-
-```shell
-	svn_committer = svn_committer <USER@DOMAIN.COM>
-```
-Once this is done, you can edit the file, and enter in each users actual name and email address on the right side of the equals sign. This will be the Git author information used during the migration.
 
 Debugging
 ---------
